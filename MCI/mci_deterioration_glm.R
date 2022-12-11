@@ -9,43 +9,37 @@ cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
 dat <- read.csv('data/mci_progress.csv')
+dat$last_DX <- as.factor(dat$last_DX)
 dat$X <- NULL
-
-boot_dat <- bootstrapping(training = dat, m = 250, group = 'MCI')
-
-#table(boot_dat$last_DX)
 
 mcPerf <- data.frame(ROC = numeric(), Sens = numeric(), Spec = numeric(),
                      Accuracy = numeric(), Kappa = numeric())
 mcRep <- 1
 
 ctrl <- trainControl(method = 'cv', number = 5, classProbs = T, 
-                     summaryFunction = twoClassSummary,# sampling='smote',
+                     summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(lambda = seq(0, 1, 0.1), alpha = seq(0, 1, 0.1))
+grid <- expand.grid(lambda = seq(0, 5, 0.1), alpha = seq(0, 1, 0.1))
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
   print(j)
-  nrfolds = nrow(boot_dat)/3 
+  nrfolds = nrow(dat)/3 
   
-  folds <- createFolds(boot_dat$last_DX, k = nrfolds) 
+  folds <- createFolds(dat$last_DX, k = nrfolds) 
   
   totalnewPrediction <- c(NA)
-  length(totalnewPrediction) <- nrow(boot_dat)
+  length(totalnewPrediction) <- nrow(dat)
   
   totalprobabilities <- c(NA)
-  length(totalprobabilities) <- nrow(boot_dat)
+  length(totalprobabilities) <- nrow(dat)
   
   for (n in 1:nrfolds){
     
-    training <- boot_dat[-folds[[n]],]
-    test <- boot_dat[folds[[n]],]
-    
-    # training$last_DX <- factor(training$last_DX)
-    # test$last_DX <- factor(test$last_DX)
-    # # missing values imputation
+    trained <- dat[-folds[[n]],]
+    training <- bootstrapping(training = trained, m = 250, group = 'MCI')
+    test <- dat[folds[[n]],]
     
     impute_train <- preProcess(training, method = "knnImpute")
     training <- predict(impute_train, training)
@@ -71,28 +65,6 @@ for (j in 1:mcRep) {
     evalResults$rf <- predict(model, test, type = "prob")[, 1]
     evalResults$newPrediction <- predict(model, test)
     
-    # partial ROCs
-    # nrow_test <- nrow(test)
-    # newPrediction<-c(NA)
-    # length(newPrediction) <- nrow_test
-    # 
-    # for (i in 1:nrow_test){
-    #   
-    #   rfROC <- roc(evalResults[-i, 'last_DX'], evalResults[-i, 'rf'],
-    #                levels = c('CN', 'MCI_AD'))
-    #   #rfROC
-    #   #plot(rfROC, legacy.axes=T)
-    #   
-    #   # alternative cutoff
-    #   rfThresh<- coords(rfROC, x = 'best', best.method = 'youden')
-    #   #rfThresh <- coords(rfROC, x = 'best', best.method = 'closest.topleft')
-    #   # rfThresh
-    #   
-    #   # new predictions
-    #   newPrediction[i] <- ifelse(evalResults[i, 'rf'] >= rfThresh[1],
-    #                              'MCI_AD', 'CN')
-    #   
-    # }
     
     totalnewPrediction[folds[[n]]] <- evalResults$newPrediction
     totalprobabilities[folds[[n]]] <- evalResults$rf
@@ -104,11 +76,12 @@ for (j in 1:mcRep) {
                                                               'Dementia'))
   
   # confusion matrix all dataset
-  cm <- confusionMatrix(totalnewPrediction, boot_dat$last_DX, positive = 'Dementia')
+  
+  cm <- confusionMatrix(totalnewPrediction, dat$last_DX, positive = 'Dementia')
   cm
   
   # perf
-  rfROCfull <- roc(boot_dat$last_DX, totalprobabilities, levels = c('CN_MCI',
+  rfROCfull <- roc(dat$last_DX, totalprobabilities, levels = c('CN_MCI',
                                                                'Dementia'))
   
   v <- c(ROC = auc(rfROCfull), cm$byClass[c(1, 2)], cm$overall[c(1, 2)])
@@ -118,4 +91,5 @@ for (j in 1:mcRep) {
   mcPerf <- rbind(mcPerf, v)
 }
 
+write.csv(mcPerf, 'data/mci_glmnet_boot_inner_mcperf.csv')
 
