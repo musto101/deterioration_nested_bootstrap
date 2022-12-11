@@ -11,7 +11,7 @@ registerDoParallel(cl)
 dat <- read.csv('data/mci_progress.csv')
 dat$X <- NULL
 
-boot_dat <- bootstrapping(training = dat, m = 1000, group = 'MCI')
+boot_dat <- bootstrapping(training = dat, m = 250, group = 'MCI')
 
 #table(boot_dat$last_DX)
 
@@ -23,7 +23,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,# sampling='smote',
                      verboseIter = F)
 
-grid <- expand.grid(lambda = seq(0, 5, 1), alpha = seq(0, 1, 0.1))
+grid <- expand.grid(lambda = seq(0, 1, 0.1), alpha = seq(0, 1, 0.1))
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
@@ -33,10 +33,10 @@ for (j in 1:mcRep) {
   folds <- createFolds(boot_dat$last_DX, k = nrfolds) 
   
   totalnewPrediction <- c(NA)
-  length(totalnewPrediction) <- nrow(dat)
+  length(totalnewPrediction) <- nrow(boot_dat)
   
   totalprobabilities <- c(NA)
-  length(totalprobabilities) <- nrow(dat)
+  length(totalprobabilities) <- nrow(boot_dat)
   
   for (n in 1:nrfolds){
     
@@ -104,11 +104,11 @@ for (j in 1:mcRep) {
                                                               'Dementia'))
   
   # confusion matrix all dataset
-  cm <- confusionMatrix(totalnewPrediction, dat$last_DX, positive = 'Dementia')
+  cm <- confusionMatrix(totalnewPrediction, boot_dat$last_DX, positive = 'Dementia')
   cm
   
   # perf
-  rfROCfull <- roc(dat$last_DX, totalprobabilities, levels = c('CN_MCI',
+  rfROCfull <- roc(boot_dat$last_DX, totalprobabilities, levels = c('CN_MCI',
                                                                'Dementia'))
   
   v <- c(ROC = auc(rfROCfull), cm$byClass[c(1, 2)], cm$overall[c(1, 2)])
