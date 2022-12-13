@@ -20,7 +20,8 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(lambda = seq(5, 10, 0.1), alpha = seq(0, 1, 0.01))
+grid <- expand.grid(n.trees = seq(1, 10, 1), interaction.depth = 1:5,
+                    shrinkage = seq(0.1, 0.5, 0.1), n.minobsinnode = 5:10)
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
@@ -38,7 +39,7 @@ for (j in 1:mcRep) {
   for (n in 1:nrfolds){
     
     trained <- dat[-folds[[n]],]
-    training <- bootstrapping(training = trained, m = 250, group = 'MCI')
+    training <- bootstrapping(training = trained, m = 100, group = 'MCI')
     test <- dat[folds[[n]],]
     
     impute_train <- preProcess(training, method = "knnImpute")
@@ -50,11 +51,11 @@ for (j in 1:mcRep) {
     test[,-1] <- predict(impute_test, test[,-1])
     
     # tuning
-    model <- train(last_DX ~ ., training, method = "glmnet", 
-                      metric = "ROC",
-                      # preProc = c("center", "scale"),
-                      tuneGrid = grid,
-                      trControl = ctrl)
+    model <- train(last_DX ~ ., training, method = "gbm", 
+                   metric = "ROC",
+                   # preProc = c("center", "scale"),
+                   tuneGrid = grid,
+                   trControl = ctrl)
     
     
     
