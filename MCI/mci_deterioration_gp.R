@@ -20,7 +20,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(mtry = 1:ncol(dat))
+grid <- expand.grid(sigma = seq(0, 20, 0.1))
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
@@ -38,7 +38,7 @@ for (j in 1:mcRep) {
   for (n in 1:nrfolds){
     
     trained <- dat[-folds[[n]],]
-    training <- bootstrapping(training = trained, m = 100, group = 'MCI')
+    training <- bootstrapping(training = trained, m = 250, group = 'MCI')
     test <- dat[folds[[n]],]
     
     impute_train <- preProcess(training, method = "knnImpute")
@@ -50,7 +50,7 @@ for (j in 1:mcRep) {
     test[,-1] <- predict(impute_test, test[,-1])
     
     # tuning
-    model <- train(last_DX ~ ., training, method = "rf", 
+    model <- train(last_DX ~ ., training, method = 'gaussprRadial', 
                    metric = "ROC",
                    # preProc = c("center", "scale"),
                    tuneGrid = grid,
