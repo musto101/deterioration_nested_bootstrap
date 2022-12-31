@@ -22,7 +22,9 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(size = 1:50)
+grid <- expand.grid(nrounds = 1:10, max_depth = 1:2,
+                    eta = seq(0.01, 0.05, 0.01), gamma = seq(0.5, 1, 0.1), 
+                    colsample_bytree = 1, min_child_weight = 1, subsample = 1)
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
@@ -40,7 +42,7 @@ for (j in 1:mcRep) {
   for (n in 1:nrfolds){
     
     trained <- dat[-folds[[n]],]
-    training <- bootstrapping(training = trained, m = 250, group = 'MCI')
+    training <- bootstrapping(training = trained, m = 10, group = 'MCI')
     test <- dat[folds[[n]],]
     
     impute_train <- preProcess(training, method = "knnImpute")
@@ -52,7 +54,7 @@ for (j in 1:mcRep) {
     test[,-1] <- predict(impute_test, test[,-1])
     
     # tuning
-    model <- train(last_DX ~ ., training, method = "mlp", 
+    model <- train(last_DX ~ ., training, method = "xgbTree", 
                    metric = "ROC",
                    # preProc = c("center", "scale"),
                    tuneGrid = grid,
@@ -93,7 +95,7 @@ for (j in 1:mcRep) {
   mcPerf <- rbind(mcPerf, v)
 }
 
-write.csv(mcPerf, 'data/mci_mlp_boot_inner_mcperf.csv')
+write.csv(mcPerf, 'data/mci_xgb_boot_inner_mcperf.csv')
 
 post <- Sys.time()
 
