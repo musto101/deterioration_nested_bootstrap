@@ -1,4 +1,4 @@
-#install.packages('../AdniDeterioration/', repos = NULL, type="source")
+install.packages('../AdniDeterioration/', repos = NULL, type="source")
 
 library(AdniDeterioration)
 library(caret)
@@ -22,7 +22,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(sigma = seq(1, 5, 0.1))
+grid <- expand.grid(degree = 1, scale = seq(7.317101e-02, 8.760191e-02, 0.001))
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
@@ -52,7 +52,7 @@ for (j in 1:mcRep) {
     test[,-1] <- predict(impute_test, test[,-1])
     
     # tuning
-    model <- train(last_DX ~ ., training, method = 'gaussprRadial', 
+    model <- train(last_DX ~ ., training, method = 'gaussprPoly', 
                    metric = "ROC",
                    # preProc = c("center", "scale"),
                    tuneGrid = grid,
