@@ -38,7 +38,7 @@ for (j in 1:mcRep) {
   for (n in 1:nrfolds){
     
     trained <- dat[-folds[[n]],]
-    training <- bootstrapping(training = trained, m = 100, group = 'MCI')
+    training <- bootstrapping(training = trained, m = 250, group = 'MCI')
     test <- dat[folds[[n]],]
     
     impute_train <- preProcess(training, method = "knnImpute")
@@ -52,6 +52,7 @@ for (j in 1:mcRep) {
     # tuning
     model <- train(last_DX ~ ., training, method = "rf", 
                    metric = "ROC",
+                   ntree = 5000,
                    # preProc = c("center", "scale"),
                    tuneGrid = grid,
                    trControl = ctrl)
@@ -91,5 +92,5 @@ for (j in 1:mcRep) {
   mcPerf <- rbind(mcPerf, v)
 }
 
-write.csv(mcPerf, 'data/mci_glmnet_boot_inner_mcperf.csv')
+write.csv(mcPerf, 'data/mci_rf_boot_inner_mcperf.csv')
 

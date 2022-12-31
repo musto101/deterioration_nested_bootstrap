@@ -20,9 +20,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(n.trees = seq(1, 10, 1),
-                    interaction.depth = 1:5, shrinkage = seq(1, 5, 0.1),
-                    n.minobsinnode = 5:10)
+grid <- expand.grid(size = 1:10)
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
@@ -52,9 +50,8 @@ for (j in 1:mcRep) {
     test[,-1] <- predict(impute_test, test[,-1])
     
     # tuning
-    model <- train(last_DX ~ ., training, method = "gbm", 
+    model <- train(last_DX ~ ., training, method = "mlp", 
                    metric = "ROC",
-                   distribution="bernoulli",
                    # preProc = c("center", "scale"),
                    tuneGrid = grid,
                    trControl = ctrl)
@@ -94,5 +91,5 @@ for (j in 1:mcRep) {
   mcPerf <- rbind(mcPerf, v)
 }
 
-write.csv(mcPerf, 'data/mci_gbm_boot_inner_mcperf.csv')
+write.csv(mcPerf, 'data/mci_mlp_boot_inner_mcperf.csv')
 

@@ -1,4 +1,4 @@
-#install.packages('../AdniDeterioration/', repos = NULL, type="source")
+install.packages('../AdniDeterioration/', repos = NULL, type="source")
 
 library(AdniDeterioration)
 library(caret)
@@ -20,7 +20,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(lambda = seq(5, 20, 1), alpha = seq(0, 1, 0.001))
+grid <- expand.grid(lambda = seq(5, 30, 1), alpha = seq(0, 1, 0.01))
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
