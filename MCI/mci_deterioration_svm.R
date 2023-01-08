@@ -22,7 +22,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(degree = 1, scale = seq(7.317101e-02, 8.760191e-02, 0.001),
+grid <- expand.grid(degree = 3, scale = seq(7.317101e-02, 8.760191e-02, 0.001),
                     C = c(0.25, 0.5))
 
 for (j in 1:mcRep) {

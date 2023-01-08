@@ -8,6 +8,8 @@ library(pROC)
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
+pre <- Sys.time()
+
 dat <- read.csv('data/mci_progress.csv')
 dat$last_DX <- as.factor(dat$last_DX)
 dat$X <- NULL
@@ -52,7 +54,7 @@ for (j in 1:mcRep) {
     # tuning
     model <- train(last_DX ~ ., training, method = "rf", 
                    metric = "ROC",
-                   ntree = 5000,
+                   ntree = 7500,
                    # preProc = c("center", "scale"),
                    tuneGrid = grid,
                    trControl = ctrl)
@@ -92,5 +94,6 @@ for (j in 1:mcRep) {
   mcPerf <- rbind(mcPerf, v)
 }
 
+post <- Sys.time()
 write.csv(mcPerf, 'data/mci_rf_boot_inner_mcperf.csv')
 
