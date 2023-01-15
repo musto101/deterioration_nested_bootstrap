@@ -38,7 +38,7 @@ for (j in 1:mcRep) {
   for (n in 1:nrfolds){
     
     trained <- dat[-folds[[n]],]
-    training <- bootstrapping(training = trained, m = 25, group = 'MCI')
+    training <- bootstrapping(training = trained, m = 250, group = 'MCI')
     test <- dat[folds[[n]],]
     
     impute_train <- preProcess(training, method = "knnImpute")

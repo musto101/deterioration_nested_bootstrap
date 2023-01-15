@@ -20,7 +20,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(lambda = seq(5, 10, 0.01), alpha = seq(0, 1, 0.01))
+grid <- expand.grid(mtry = 1:ncol(dat))
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
@@ -50,7 +50,7 @@ for (j in 1:mcRep) {
     test[,-1] <- predict(impute_test, test[,-1])
     
     # tuning
-    model <- train(last_DX ~ ., training, method = "glmnet", 
+    model <- train(last_DX ~ ., training, method = "rf", 
                    metric = "ROC",
                    # preProc = c("center", "scale"),
                    tuneGrid = grid,
@@ -91,5 +91,5 @@ for (j in 1:mcRep) {
   mcPerf <- rbind(mcPerf, v)
 }
 
-write.csv(mcPerf, 'data/cn_glmnet_boot_inner_mcperf.csv')
+write.csv(mcPerf, 'data/cn_rf_boot_inner_mcperf.csv')
 
