@@ -8,7 +8,7 @@ library(pROC)
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
-dat <- read.csv('data/mci_progress.csv')
+dat <- read.csv('data/cn_progress.csv')
 dat$last_DX <- as.factor(dat$last_DX)
 dat$X <- NULL
 
@@ -51,10 +51,10 @@ for (j in 1:mcRep) {
     
     # tuning
     model <- train(last_DX ~ ., training, method = "glmnet", 
-                      metric = "ROC",
-                      # preProc = c("center", "scale"),
-                      tuneGrid = grid,
-                      trControl = ctrl)
+                   metric = "ROC",
+                   # preProc = c("center", "scale"),
+                   tuneGrid = grid,
+                   trControl = ctrl)
     
     
     
@@ -69,20 +69,20 @@ for (j in 1:mcRep) {
     totalnewPrediction[folds[[n]]] <- evalResults$newPrediction
     totalprobabilities[folds[[n]]] <- evalResults$rf
   }
-  totalnewPrediction <- ifelse(totalnewPrediction == 1, 'CN_MCI',
+  totalnewPrediction <- ifelse(totalnewPrediction == 1, 'CN',
                                ifelse(totalnewPrediction == 2,
-                                      'Dementia', totalnewPrediction))
-  totalnewPrediction <- factor(totalnewPrediction, levels = c('CN_MCI',
-                                                              'Dementia'))
+                                      'MCI_AD', totalnewPrediction))
+  totalnewPrediction <- factor(totalnewPrediction, levels = c('CN',
+                                                              'MCI_AD'))
   
   # confusion matrix all dataset
   
-  cm <- confusionMatrix(totalnewPrediction, dat$last_DX, positive = 'Dementia')
+  cm <- confusionMatrix(totalnewPrediction, dat$last_DX, positive = 'MCI_AD')
   cm
   
   # perf
-  rfROCfull <- roc(dat$last_DX, totalprobabilities, levels = c('CN_MCI',
-                                                               'Dementia'))
+  rfROCfull <- roc(dat$last_DX, totalprobabilities, levels = c('CN',
+                                                               'MCI_AD'))
   
   v <- c(ROC = auc(rfROCfull), cm$byClass[c(1, 2)], cm$overall[c(1, 2)])
   names(v) <- c('ROC', 'Sens', 'Spec', 'Accuracy', 'Kappa')
@@ -91,5 +91,5 @@ for (j in 1:mcRep) {
   mcPerf <- rbind(mcPerf, v)
 }
 
-write.csv(mcPerf, 'data/mci_glmnet_boot_inner_mcperf.csv')
+write.csv(mcPerf, 'data/cn_glmnet_boot_inner_mcperf.csv')
 

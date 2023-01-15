@@ -54,7 +54,7 @@ for (j in 1:mcRep) {
     # tuning
     model <- train(last_DX ~ ., training, method = "rf", 
                    metric = "ROC",
-                   ntree = 7500,
+                   ntree = 2500,
                    # preProc = c("center", "scale"),
                    tuneGrid = grid,
                    trControl = ctrl)

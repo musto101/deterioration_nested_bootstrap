@@ -22,7 +22,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(degree = 2, scale = seq(7.317101e-02, 9.760191e-02, 0.001))
+grid <- expand.grid(degree = 1, scale = seq(0.06, 0.1, 0.0001))
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
