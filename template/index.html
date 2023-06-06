@@ -1,0 +1,14 @@
+       <!DOCTYPE html>
+<html>
+<head>
+	<title>My Web Interface</title>
+</head>
+<body>
+	<h1>Upload Your Data</h1>
+	<form method="post" action="{{ url_for('submit') }}" enctype="multipart/form-data">
+		<label for="user_data">Data:</label><br>
+		<textarea id="user_data" name="user_data" rows="10" cols="50"></textarea><br>
+		<input type="submit" value="Submit">
+	</form>
+</body>
+</html>

@@ -1,0 +1,78 @@
+/var/lib/slurm-llnl/slurmd/job00558/slurm_script: line 10: cd: /my_igor_work/deterioration_nested_bootstrap: No such file or directory
+0: joblib.externals.loky.process_executor._RemoteTraceback: 
+0: """
+0: Traceback (most recent call last):
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/externals/loky/process_executor.py", line 428, in _process_worker
+0:     r = call_item()
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/externals/loky/process_executor.py", line 275, in __call__
+0:     return self.fn(*self.args, **self.kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/_parallel_backends.py", line 620, in __call__
+0:     return self.func(*args, **kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 288, in __call__
+0:     return [func(*args, **kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 288, in <listcomp>
+0:     return [func(*args, **kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/utils/parallel.py", line 123, in __call__
+0:     return self.function(*args, **kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/model_selection/_validation.py", line 1068, in _fit_and_predict
+0:     estimator.fit(X_train, y_train, **fit_params)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/model_selection/_search.py", line 874, in fit
+0:     self._run_search(evaluate_candidates)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/model_selection/_search.py", line 1768, in _run_search
+0:     evaluate_candidates(
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/model_selection/_search.py", line 821, in evaluate_candidates
+0:     out = parallel(
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/utils/parallel.py", line 63, in __call__
+0:     return super().__call__(iterable_with_config)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 1085, in __call__
+0:     if self.dispatch_one_batch(iterator):
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 901, in dispatch_one_batch
+0:     self._dispatch(tasks)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 819, in _dispatch
+0:     job = self._backend.apply_async(batch, callback=cb)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/_parallel_backends.py", line 208, in apply_async
+0:     result = ImmediateResult(func)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/_parallel_backends.py", line 597, in __init__
+0:     self.results = batch()
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 288, in __call__
+0:     return [func(*args, **kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 288, in <listcomp>
+0:     return [func(*args, **kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/utils/parallel.py", line 123, in __call__
+0:     return self.function(*args, **kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/model_selection/_validation.py", line 674, in _fit_and_score
+0:     estimator = estimator.set_params(**cloned_parameters)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/pipeline.py", line 211, in set_params
+0:     self._set_params("steps", **kwargs)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/utils/metaestimators.py", line 70, in _set_params
+0:     super().set_params(**params)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/base.py", line 205, in set_params
+0:     raise ValueError(
+0: ValueError: Invalid parameter 'svm_degree' for estimator Pipeline(steps=[('imputer', KNNImputer(add_indicator=True)),
+0:                 ('ros', RandomOverSampler()),
+0:                 ('svm', SVC(kernel='poly', probability=True))]). Valid parameters are: ['memory', 'steps', 'verbose'].
+0: """
+0: 
+0: The above exception was the direct cause of the following exception:
+0: 
+0: Traceback (most recent call last):
+0:   File "MCI/mci_svm.py", line 40, in <module>
+0:     nested_score = cross_val_predict(clf, X=X, y=y, cv=outer_cv, method='predict_proba', n_jobs=-1)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/model_selection/_validation.py", line 986, in cross_val_predict
+0:     predictions = parallel(
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/sklearn/utils/parallel.py", line 63, in __call__
+0:     return super().__call__(iterable_with_config)
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 1098, in __call__
+0:     self.retrieve()
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/parallel.py", line 975, in retrieve
+0:     self._output.extend(job.get(timeout=self.timeout))
+0:   File "/home/students/hthom018/.local/lib/python3.8/site-packages/joblib/_parallel_backends.py", line 567, in wrap_future_result
+0:     return future.result(timeout=timeout)
+0:   File "/usr/lib/python3.8/concurrent/futures/_base.py", line 444, in result
+0:     return self.__get_result()
+0:   File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+0:     raise self._exception
+0: ValueError: Invalid parameter 'svm_degree' for estimator Pipeline(steps=[('imputer', KNNImputer(add_indicator=True)),
+0:                 ('ros', RandomOverSampler()),
+0:                 ('svm', SVC(kernel='poly', probability=True))]). Valid parameters are: ['memory', 'steps', 'verbose'].
+srun: error: bill: task 0: Exited with exit code 1

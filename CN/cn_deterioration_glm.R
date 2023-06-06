@@ -8,6 +8,8 @@ library(pROC)
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
+pre <- Sys.time()
+
 dat <- read.csv('data/cn_progress.csv')
 dat$last_DX <- as.factor(dat$last_DX)
 dat$X <- NULL
@@ -20,7 +22,7 @@ ctrl <- trainControl(method = 'cv', number = 5, classProbs = T,
                      summaryFunction = twoClassSummary,
                      verboseIter = F)
 
-grid <- expand.grid(lambda = seq(5, 10, 0.01), alpha = seq(0, 1, 0.01))
+grid <- expand.grid(lambda = seq(1, 5, 0.01), alpha = seq(0, 1, 0.01))
 
 for (j in 1:mcRep) {
   # create nrfolds folds and start outer CV
@@ -92,4 +94,6 @@ for (j in 1:mcRep) {
 }
 
 write.csv(mcPerf, 'data/cn_glmnet_boot_inner_mcperf.csv')
+
+post <- Sys.time()
 

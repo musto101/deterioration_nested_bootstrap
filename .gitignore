@@ -40,3 +40,4 @@ vignettes/*.pdf
 
 data/
 paper_drafts/
+.idea/
